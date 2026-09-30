@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <title>Registo de Utilizador</title>
+    <link rel="stylesheet" href="estilos.css">
+    <style>
+/* ==========================================================
+   Folha de estilos - Registo de Utilizador (Trabalho 1)
+   ========================================================== */
+
+:root {
+    --cor-1: #6366f1;
+    --cor-2: #8b5cf6;
+    --cor-3: #ec4899;
+    --cor-4: #06b6d4;
+    --texto: #1e1b4b;
+    --texto-suave: #6b7280;
+    --base: #e0e7ff;
+    --cartao: rgba(255, 255, 255, 0.72);
+    --campo: rgba(255, 255, 255, 0.85);
+    --campo-foco: #ffffff;
+    --borda: rgba(139, 92, 246, 0.25);
+    --borda-cartao: rgba(255, 255, 255, 0.9);
+    --sombra: 0 40px 80px -20px rgba(79, 70, 229, 0.4), 0 10px 30px -10px rgba(236, 72, 153, 0.25);
+    --raio: 14px;
+    --malha-opacidade: 1;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+::selection {
+    color: #ffffff;
+    background: var(--cor-2);
+}
+
+/* ---------- Fundo em malha de cor, animado ---------- */
+
+html {
+    background: var(--base);
+}
+
+body {
+    position: relative;
+    min-height: 100vh;
+    margin: 0;
+    padding: 64px 16px 80px;
+    font-family: "Segoe UI", system-ui, -apple-system, Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+    color: var(--texto);
+    background: transparent;
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    inset: -25%;
+    z-index: -2;
+    opacity: var(--malha-opacidade);
+    background:
+        radial-gradient(circle at 15% 20%, rgba(99, 102, 241, 0.85), transparent 45%),
+        radial-gradient(circle at 85% 12%, rgba(236, 72, 153, 0.75), transparent 45%),
+        radial-gradient(circle at 75% 85%, rgba(6, 182, 212, 0.75), transparent 45%),
+        radial-gradient(circle at 12% 88%, rgba(251, 191, 36, 0.55), transparent 45%);
+    animation: flutuar 22s ease-in-out infinite alternate;
+}
+
+body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background-image: radial-gradient(rgba(99, 102, 241, 0.25) 1.2px, transparent 1.2px);
+    background-size: 28px 28px;
+    -webkit-mask-image: radial-gradient(circle at 50% 30%, #000, transparent 75%);
+    mask-image: radial-gradient(circle at 50% 30%, #000, transparent 75%);
+}
+
+@keyframes flutuar {
+    from { transform: scale(1) rotate(0deg); }
+    to   { transform: scale(1.18) rotate(8deg); }
+}
+
+/* ---------- Título ---------- */
+
+h1 {
+    max-width: 700px;
+    margin: 0 auto 36px;
+    text-align: center;
+    font-size: clamp(2.2rem, 7vw, 3.6rem);
+    font-weight: 900;
+    letter-spacing: -0.04em;
+    line-height: 1.1;
+    background: linear-gradient(90deg, var(--cor-1), var(--cor-2), var(--cor-3), var(--cor-2), var(--cor-1));
+    background-size: 250% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    filter: drop-shadow(0 8px 22px rgba(139, 92, 246, 0.35));
+    animation: brilho-titulo 8s linear infinite;
+}
+
+h1::after {
+    content: "";
+    display: block;
+    width: 110px;
+    height: 6px;
+    margin: 18px auto 0;
+    border-radius: 99px;
+    background: linear-gradient(90deg, var(--cor-1), var(--cor-3));
+    box-shadow: 0 6px 18px rgba(236, 72, 153, 0.5);
+}
+
+@keyframes brilho-titulo {
+    from { background-position: 0% 0; }
+    to   { background-position: 250% 0; }
+}
+
+/* ---------- Cartão do formulário ---------- */
+
+form {
+    position: relative;
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 44px 40px 40px;
+    background: var(--cartao);
+    border: 1px solid var(--borda-cartao);
+    border-radius: 32px;
+    box-shadow: var(--sombra);
+    -webkit-backdrop-filter: blur(22px) saturate(160%);
+    backdrop-filter: blur(22px) saturate(160%);
+    overflow: hidden;
+    animation: entrada 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+form::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 7px;
+    background: linear-gradient(90deg, var(--cor-4), var(--cor-1), var(--cor-2), var(--cor-3), var(--cor-2), var(--cor-1), var(--cor-4));
+    background-size: 300% 100%;
+    animation: brilho-botao 8s linear infinite;
+}
+
+/* ---------- Secções (fieldset / legend) ---------- */
+
+fieldset {
+    position: relative;
+    margin: 0 0 30px;
+    padding: 30px 26px 12px;
+    border: 1px solid var(--borda);
+    border-radius: 22px;
+    background: rgba(255, 255, 255, 0.12);
+    transition: border-color 0.3s, box-shadow 0.3s, transform 0.3s;
+    animation: entrada 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+fieldset:nth-of-type(1) { animation-delay: 0.10s; }
+fieldset:nth-of-type(2) { animation-delay: 0.18s; }
+fieldset:nth-of-type(3) { animation-delay: 0.26s; }
+fieldset:nth-of-type(4) { animation-delay: 0.34s; }
+fieldset:nth-of-type(5) { animation-delay: 0.42s; }
+fieldset:nth-of-type(6) { animation-delay: 0.50s; }
+
+fieldset:hover {
+    border-color: var(--cor-2);
+    box-shadow: 0 18px 40px -18px rgba(139, 92, 246, 0.55);
+}
+
+fieldset:focus-within {
+    border-color: var(--cor-1);
+    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.12), 0 18px 40px -18px rgba(99, 102, 241, 0.6);
+}
+
+@keyframes entrada {
+    from {
+        opacity: 0;
+        transform: translateY(24px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+legend {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 7px 20px 7px 7px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    color: #ffffff;
+    background: linear-gradient(90deg, var(--cor-1), var(--cor-2), var(--cor-3));
+    border-radius: 99px;
+    box-shadow: 0 10px 22px -8px rgba(139, 92, 246, 0.9);
+}
+
+legend::before {
+    content: "";
+    display: inline-grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    font-size: 1rem;
+    line-height: 1;
+    background: #ffffff;
+    border-radius: 50%;
+    box-shadow: inset 0 -2px 4px rgba(99, 102, 241, 0.25);
+}
+
+fieldset:nth-of-type(1) legend::before { content: "👤"; }
+fieldset:nth-of-type(2) legend::before { content: "⚧"; color: var(--cor-2); font-weight: 700; }
+fieldset:nth-of-type(3) legend::before { content: "🔐"; }
+fieldset:nth-of-type(4) legend::before { content: "⭐"; }
+fieldset:nth-of-type(5) legend::before { content: "📝"; }
+fieldset:nth-of-type(6) legend::before { content: "✅"; }
+
+/* ---------- Parágrafos e etiquetas ---------- */
+
+p {
+    margin: 0 0 20px;
+}
+
+p > label:first-child {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    color: var(--texto-suave);
+    transition: color 0.2s;
+}
+
+p:focus-within > label:first-child {
+    color: var(--cor-1);
+}
+
+/* ---------- Campos de texto, email, password, select, textarea ---------- */
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+select,
+textarea {
+    width: 100%;
+    padding: 15px 18px;
+    font: inherit;
+    color: var(--texto);
+    background: var(--campo);
+    border: 2px solid var(--borda);
+    border-radius: var(--raio);
+    box-shadow: inset 0 2px 4px rgba(79, 70, 229, 0.06);
+    transition: border-color 0.2s, background 0.2s, box-shadow 0.2s, transform 0.2s;
+}
+
+input[type="text"]:hover,
+input[type="email"]:hover,
+input[type="password"]:hover,
+select:hover,
+textarea:hover {
+    border-color: var(--cor-2);
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+select:focus,
+textarea:focus {
+    outline: none;
+    background: var(--campo-foco);
+    border-color: var(--cor-1);
+    box-shadow: 0 0 0 5px rgba(99, 102, 241, 0.22), 0 10px 24px -10px rgba(99, 102, 241, 0.6);
+    transform: translateY(-1px);
+}
+
+textarea {
+    min-height: 140px;
+    resize: vertical;
+}
+
+select {
+    appearance: none;
+    -webkit-appearance: none;
+    padding-right: 52px;
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%236366f1' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 18px center;
+}
+
+/* ---------- Botões de opção (radio) em formato de cápsula ---------- */
+
+input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+}
+
+input[type="radio"] + label {
+    display: inline-block;
+    margin: 0 10px 18px 0;
+    padding: 12px 26px;
+    font-weight: 700;
+    color: var(--texto-suave);
+    background: var(--campo);
+    border: 2px solid var(--borda);
+    border-radius: 99px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+input[type="radio"] + label:hover {
+    color: var(--cor-2);
+    border-color: var(--cor-2);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px -10px rgba(139, 92, 246, 0.7);
+}
+
+input[type="radio"]:checked + label {
+    color: #ffffff;
+    background: linear-gradient(90deg, var(--cor-1), var(--cor-2), var(--cor-3));
+    border-color: transparent;
+    box-shadow: 0 12px 24px -8px rgba(139, 92, 246, 0.9);
+    transform: translateY(-2px) scale(1.04);
+}
+
+input[type="radio"]:focus-visible + label {
+    outline: 3px solid var(--cor-3);
+    outline-offset: 3px;
+}
+
+/* ---------- Caixas de verificação (checkbox) personalizadas ---------- */
+
+p:has(> input[type="checkbox"]) {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 14px 18px;
+    background: var(--campo);
+    border: 2px solid var(--borda);
+    border-radius: var(--raio);
+    transition: all 0.25s ease;
+}
+
+p:has(> input[type="checkbox"]):hover {
+    border-color: var(--cor-2);
+    transform: translateX(6px);
+    box-shadow: 0 10px 22px -12px rgba(139, 92, 246, 0.7);
+}
+
+p:has(> input[type="checkbox"]:checked) {
+    border-color: var(--cor-1);
+    background: linear-gradient(90deg, rgba(99, 102, 241, 0.2), rgba(236, 72, 153, 0.12));
+}
+
+input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    flex: 0 0 auto;
+    width: 26px;
+    height: 26px;
+    margin: 0;
+    background: #ffffff;
+    border: 2px solid var(--cor-2);
+    border-radius: 9px;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.3, 1.6, 0.5, 1);
+}
+
+input[type="checkbox"]:checked {
+    background-color: var(--cor-1);
+    background-image:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='5 13 10 18 19 7'/%3E%3C/svg%3E"),
+        linear-gradient(135deg, var(--cor-1), var(--cor-3));
+    background-size: 80%, 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+    border-color: transparent;
+    transform: scale(1.15) rotate(-6deg);
+    box-shadow: 0 6px 14px -4px rgba(99, 102, 241, 0.9);
+}
+
+input[type="checkbox"]:focus-visible {
+    outline: 3px solid var(--cor-3);
+    outline-offset: 3px;
+}
+
+input[type="checkbox"] + label {
+    flex: 1;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+/* ---------- Carregamento de ficheiro ---------- */
+
+input[type="file"] {
+    width: 100%;
+    padding: 26px 22px;
+    font: inherit;
+    color: var(--texto-suave);
+    background:
+        repeating-linear-gradient(-45deg, transparent 0 12px, rgba(139, 92, 246, 0.05) 12px 24px),
+        var(--campo);
+    border: 2px dashed var(--cor-2);
+    border-radius: 18px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+input[type="file"]:hover {
+    border-color: var(--cor-3);
+    transform: translateY(-2px);
+    box-shadow: 0 14px 28px -14px rgba(236, 72, 153, 0.6);
+}
+
+input[type="file"]::file-selector-button {
+    margin-right: 18px;
+    padding: 12px 24px;
+    font: inherit;
+    font-weight: 700;
+    color: #ffffff;
+    background: linear-gradient(90deg, var(--cor-1), var(--cor-2), var(--cor-3));
+    border: none;
+    border-radius: 99px;
+    cursor: pointer;
+    box-shadow: 0 8px 18px -6px rgba(139, 92, 246, 0.9);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+input[type="file"]::file-selector-button:hover {
+    transform: translateY(-2px) scale(1.04);
+    box-shadow: 0 12px 24px -6px rgba(236, 72, 153, 0.8);
+}
+
+/* ---------- Botões Submeter / Repor ---------- */
+
+form > p:last-of-type {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin: 10px 0 0;
+}
+
+input[type="submit"],
+input[type="reset"] {
+    padding: 17px 38px;
+    font: inherit;
+    font-size: 1.05rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    border: none;
+    border-radius: 99px;
+    cursor: pointer;
+    transition: transform 0.25s, box-shadow 0.25s, color 0.25s, border-color 0.25s;
+}
+
+input[type="submit"] {
+    flex: 1 1 220px;
+    color: #ffffff;
+    background: linear-gradient(90deg, var(--cor-1), var(--cor-2), var(--cor-3), var(--cor-2), var(--cor-1));
+    background-size: 300% 100%;
+    box-shadow: 0 18px 34px -12px rgba(99, 102, 241, 0.95);
+    animation: brilho-botao 6s linear infinite;
+}
+
+input[type="submit"]:hover {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 24px 40px -12px rgba(236, 72, 153, 0.85);
+}
+
+@keyframes brilho-botao {
+    from { background-position: 0% 0; }
+    to   { background-position: 300% 0; }
+}
+
+input[type="reset"] {
+    color: var(--texto-suave);
+    background: var(--campo);
+    border: 2px solid var(--borda);
+}
+
+input[type="reset"]:hover {
+    color: var(--cor-3);
+    border-color: var(--cor-3);
+    transform: translateY(-4px);
+    box-shadow: 0 14px 28px -14px rgba(236, 72, 153, 0.7);
+}
+
+input[type="submit"]:active,
+input[type="reset"]:active {
+    transform: translateY(0) scale(0.97);
+}
+
+input[type="submit"]:focus-visible,
+input[type="reset"]:focus-visible {
+    outline: 3px solid var(--cor-3);
+    outline-offset: 4px;
+}
+
+/* ---------- Ecrãs pequenos ---------- */
+
+@media (max-width: 520px) {
+    body {
+        padding: 36px 12px 56px;
+    }
+
+    form {
+        padding: 34px 16px 24px;
+        border-radius: 24px;
+    }
+
+    fieldset {
+        padding: 28px 14px 8px;
+    }
+
+    input[type="file"]::file-selector-button {
+        display: block;
+        margin: 0 0 12px;
+    }
+
+    input[type="submit"],
+    input[type="reset"] {
+        flex: 1 1 100%;
+    }
+}
+
+/* ---------- Respeitar preferência de menos movimento ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation: none !important;
+        transition: none !important;
+    }
+}
+
+/* ==========================================================
+   Nível extra: layout, textura e acabamento
+   ========================================================== */
+
+html {
+    scroll-behavior: smooth;
+    scrollbar-color: var(--cor-2) transparent;
+}
+
+::-webkit-scrollbar {
+    width: 12px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(var(--cor-1), var(--cor-3));
+    border: 3px solid transparent;
+    background-clip: padding-box;
+    border-radius: 99px;
+}
+
+/* Textura fina (grão) por cima de tudo, sem bloquear cliques */
+html::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    pointer-events: none;
+    opacity: 0.06;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Orbes de luz a flutuar atrás do cartão */
+html::after {
+    content: "";
+    position: fixed;
+    top: 55%;
+    left: -8%;
+    z-index: -1;
+    width: 460px;
+    height: 460px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(236, 72, 153, 0.45), transparent 68%);
+    filter: blur(30px);
+    animation: orbe 16s ease-in-out infinite alternate;
+    pointer-events: none;
+}
+
+@keyframes orbe {
+    from { transform: translate(0, 0) scale(1); }
+    to   { transform: translate(60vw, -25vh) scale(1.3); }
+}
+
+/* Cartão mais largo para acomodar duas colunas */
+h1,
+form {
+    max-width: 780px;
+}
+
+form {
+    padding: 48px 44px 44px;
+}
+
+/* Dados Pessoais e Dados de Acesso: campos lado a lado */
+fieldset:nth-of-type(1),
+fieldset:nth-of-type(3) {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 22px;
+}
+
+/* Interesses: etiquetas em linha */
+fieldset:nth-of-type(4) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding-bottom: 26px;
+}
+
+fieldset:nth-of-type(4) p {
+    flex: 1 1 auto;
+    margin: 0;
+    padding: 14px 20px;
+}
+
+fieldset:nth-of-type(4) p label {
+    white-space: nowrap;
+}
+
+fieldset:nth-of-type(4) p:hover {
+    transform: translateY(-4px);
+}
+
+/* Género: cápsulas com um pouco mais de presença */
+fieldset:nth-of-type(2) {
+    padding-bottom: 14px;
+}
+
+/* Etiqueta dos campos com pequeno marcador colorido */
+p > label:first-child::before {
+    content: "";
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    margin-right: 8px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--cor-1), var(--cor-3));
+    vertical-align: middle;
+}
+
+/* Campo de texto que recebe cursor: linha de destaque por baixo */
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+select:focus,
+textarea:focus {
+    border-image: none;
+}
+
+/* Botões com mais presença */
+input[type="submit"] {
+    font-size: 1.12rem;
+    padding: 19px 40px;
+}
+
+form > p:last-of-type {
+    margin-top: 14px;
+    padding-top: 24px;
+    border-top: 1px dashed var(--borda);
+}
+
+@media (max-width: 640px) {
+    fieldset:nth-of-type(1),
+    fieldset:nth-of-type(3) {
+        grid-template-columns: 1fr;
+    }
+
+    form {
+        padding: 36px 18px 26px;
+    }
+}
+
+/* Correções finais */
+form::before {
+    background: linear-gradient(90deg, var(--cor-4), var(--cor-1), var(--cor-2), var(--cor-3), var(--cor-2), var(--cor-1), var(--cor-4));
+    background-size: 300% 100%;
+}
+
+fieldset:nth-of-type(4) p {
+    flex: 1 1 auto;
+    gap: 12px;
+    padding: 14px 16px;
+}
+
+fieldset:nth-of-type(4) label {
+    white-space: nowrap;
+}
+
+/* ==========================================================
+   Cores próprias para cada secção
+   ========================================================== */
+
+fieldset:nth-of-type(1) { --a1: #6366f1; --a2: #8b5cf6; }
+fieldset:nth-of-type(2) { --a1: #ec4899; --a2: #f43f5e; }
+fieldset:nth-of-type(3) { --a1: #0ea5e9; --a2: #06b6d4; }
+fieldset:nth-of-type(4) { --a1: #f59e0b; --a2: #f97316; }
+fieldset:nth-of-type(5) { --a1: #10b981; --a2: #14b8a6; }
+fieldset:nth-of-type(6) { --a1: #a855f7; --a2: #ec4899; }
+
+fieldset {
+    border-color: color-mix(in srgb, var(--a1) 45%, transparent);
+    background: linear-gradient(160deg, color-mix(in srgb, var(--a1) 9%, transparent), transparent 55%);
+}
+
+fieldset:hover,
+fieldset:focus-within {
+    border-color: var(--a1);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--a1) 15%, transparent), 0 18px 40px -18px var(--a1);
+}
+
+legend {
+    background: linear-gradient(90deg, var(--a1), var(--a2));
+    box-shadow: 0 10px 22px -8px var(--a1);
+}
+
+fieldset p > label:first-child {
+    color: color-mix(in srgb, var(--a1) 70%, #1e1b4b);
+}
+
+p > label:first-child::before {
+    background: linear-gradient(135deg, var(--a1), var(--a2));
+}
+
+input[type="radio"]:checked + label {
+    background: linear-gradient(90deg, var(--a1), var(--a2));
+    box-shadow: 0 12px 24px -8px var(--a1);
+}
+
+input[type="checkbox"]:checked {
+    background-image:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='5 13 10 18 19 7'/%3E%3C/svg%3E"),
+        linear-gradient(135deg, var(--a1), var(--a2));
+}
+
+input[type="checkbox"] {
+    border-color: var(--a1);
+}
+
+p:has(> input[type="checkbox"]:checked) {
+    border-color: var(--a1);
+    background: linear-gradient(90deg, color-mix(in srgb, var(--a1) 22%, white), color-mix(in srgb, var(--a2) 12%, white));
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+select:focus,
+textarea:focus {
+    border-color: var(--a1);
+    box-shadow: 0 0 0 5px color-mix(in srgb, var(--a1) 25%, transparent);
+}
+
+input[type="file"] {
+    border-color: var(--a1);
+}
+
+input[type="file"]::file-selector-button {
+    background: linear-gradient(90deg, var(--a1), var(--a2));
+}
+    </style>
+</head>
+<body>
+    <h1>Registo de Utilizador</h1>
+
+    <form action="processar_registo.php" method="post" enctype="multipart/form-data">
+
+        <input type="hidden" id="codigo_referencia" name="codigo_referencia" value="REF-2026-0793">
+
+        <fieldset>
+            <legend>Dados Pessoais</legend>
+
+            <p>
+                <label for="nome">Nome completo:</label>
+                <input type="text" id="nome" name="nome">
+            </p>
+
+            <p>
+                <label for="distrito">Distrito de residência:</label>
+                <select id="distrito" name="distrito">
+                    <option value="">-- Selecione --</option>
+                    <option value="aveiro">Aveiro</option>
+                    <option value="beja">Beja</option>
+                    <option value="braga">Braga</option>
+                    <option value="braganca">Bragança</option>
+                    <option value="castelo_branco">Castelo Branco</option>
+                    <option value="coimbra">Coimbra</option>
+                    <option value="evora">Évora</option>
+                    <option value="faro">Faro</option>
+                    <option value="guarda">Guarda</option>
+                    <option value="leiria">Leiria</option>
+                    <option value="lisboa">Lisboa</option>
+                    <option value="portalegre">Portalegre</option>
+                    <option value="porto">Porto</option>
+                    <option value="santarem">Santarém</option>
+                    <option value="setubal">Setúbal</option>
+                    <option value="viana_do_castelo">Viana do Castelo</option>
+                    <option value="vila_real">Vila Real</option>
+                    <option value="viseu">Viseu</option>
+                    <option value="acores">Região Autónoma dos Açores</option>
+                    <option value="madeira">Região Autónoma da Madeira</option>
+                </select>
+            </p>
+        </fieldset>
+
+        <fieldset>
+            <legend>Género</legend>
+
+            <input type="radio" id="genero_masculino" name="genero" value="masculino">
+            <label for="genero_masculino">Masculino</label>
+
+            <input type="radio" id="genero_feminino" name="genero" value="feminino">
+            <label for="genero_feminino">Feminino</label>
+
+            <input type="radio" id="genero_outro" name="genero" value="outro">
+            <label for="genero_outro">Outro</label>
+        </fieldset>
+
+        <fieldset>
+            <legend>Dados de Acesso</legend>
+
+            <p>
+                <label for="email">Correio eletrónico:</label>
+                <input type="email" id="email" name="email">
+            </p>
+
+            <p>
+                <label for="password">Palavra-passe:</label>
+                <input type="password" id="password" name="password">
+            </p>
+        </fieldset>
+
+        <fieldset>
+            <legend>Interesses</legend>
+
+            <p>
+                <input type="checkbox" id="interesse_programacao" name="interesses" value="programacao">
+                <label for="interesse_programacao">Programação</label>
+            </p>
+
+            <p>
+                <input type="checkbox" id="interesse_redes" name="interesses" value="redes">
+                <label for="interesse_redes">Redes e sistemas</label>
+            </p>
+
+            <p>
+                <input type="checkbox" id="interesse_design" name="interesses" value="design">
+                <label for="interesse_design">Design web</label>
+            </p>
+        </fieldset>
+
+        <fieldset>
+            <legend>Informação Adicional</legend>
+
+            <p>
+                <label for="biografia">Notas biográficas:</label>
+            </p>
+            <p>
+                <textarea id="biografia" name="biografia" rows="5" cols="40"></textarea>
+            </p>
+
+            <p>
+                <label for="fotografia">Fotografia de perfil:</label>
+                <input type="file" id="fotografia" name="fotografia" accept="image/*">
+            </p>
+        </fieldset>
+
+        <fieldset>
+            <legend>Termos e Condições</legend>
+
+            <p>
+                <input type="checkbox" id="termos" name="termos" value="aceite" required>
+                <label for="termos">Li e aceito os termos e condições do serviço.</label>
+            </p>
+        </fieldset>
+
+        <p>
+            <input type="submit" value="Submeter">
+            <input type="reset" value="Repor">
+        </p>
+
+    </form>
+</body>
+</html>
